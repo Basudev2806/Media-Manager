@@ -50,12 +50,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadFolderMedia() {
+        galleryFolderList.clear()
         galleryFolderList.addAll(MediaManager(this@MainActivity).getRecentFolders())
         Log.e("RECENT GALLERY FOLDERS",galleryFolderList.toString())
         adapter2.notifyDataSetChanged()
     }
 
     private fun loadFolderSelector() {
+        pictureFolders.clear()
         pictureFolders.add(Folder(folderName = "All", gallery = galleryList))
         pictureFolders.addAll(MediaManager(this@MainActivity).getFolderList())
 
@@ -77,21 +79,11 @@ class MainActivity : AppCompatActivity() {
                 if (folders[position] == "All") {
                     galleryList.clear()
                     galleryList.addAll(tempgalleryList)
-                    Toast.makeText(
-                        this@MainActivity,
-                        galleryList.size.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
                     adapter.notifyDataSetChanged()
                 } else {
                     galleryList.clear()
                     galleryList.addAll(pictureFolders[position].gallery)
                     Log.e("ALL Photos", galleryList.toString())
-                    Toast.makeText(
-                        this@MainActivity,
-                        galleryList.size.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
                     adapter.notifyDataSetChanged()
                 }
             }
@@ -138,6 +130,17 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isStoragePermissionGranted()) {
+            loadMedia()
+            loadFolderSelector()
+            loadFolderMedia()
+        } else {
+            requestStoragePermission()
         }
     }
 }
